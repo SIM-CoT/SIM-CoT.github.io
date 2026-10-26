@@ -1,0 +1,85 @@
+/* Results charts (assets/js/results.js): #results-chart dumbbell and #latent-scaling small multiples.
+   Marks use the --viz-* tokens on a white card; all text uses ink tokens. */
+
+/* ---------- shared ---------- */
+.rc,.ls{padding:16px 20px 14px}
+.rs-tip .tt-row{gap:8px}
+.rs-tip .tt-l{flex:1 1 auto;color:var(--ink-2);white-space:nowrap}
+.rs-tip .tt-row b{margin-left:14px}
+.rs-tip .tt-row b.is-gain{color:var(--gain)}
+.viz .halo{stroke:var(--white);stroke-width:4px;stroke-linejoin:round;paint-order:stroke fill}
+
+/* ---------- #results-chart ---------- */
+.results-tabs .results-chart{margin-bottom:16px}
+.rc-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;margin-bottom:8px}
+.rc-legend{font-size:.8125rem}
+.rc-key-rule{width:2px;height:14px;border-radius:1px}
+.rs-short{display:none}
+.rc-viz{height:182px}
+.rc-layer{position:absolute;inset:0}
+.rc-hit{position:absolute;border-radius:8px;cursor:default;-webkit-tap-highlight-color:transparent}
+.rc-hit:focus-visible{outline-offset:-1px}
+
+.viz .rc-grid{stroke:var(--viz-grid);stroke-width:1}
+.viz .rc-axis{stroke:var(--viz-axis);stroke-width:1}
+.viz .rc-tick{font-size:12px;fill:var(--muted)}
+.viz .rc-axis-title{font-size:12px;fill:var(--muted)}
+.viz .rc-ref{stroke-width:2;stroke-linecap:round}
+.viz .rc-ref.is-explicit{stroke:var(--viz-explicit)}
+.viz .rc-ref.is-none{stroke:var(--viz-base)}
+.viz .rc-flag{font-size:12px;fill:var(--ink-2)}
+.viz .rc-flag-v{fill:var(--ink);font-weight:600}
+.viz .rc-bar{stroke:var(--viz-simcot);stroke-width:2;stroke-linecap:round}
+.viz .rc-dot{stroke:var(--white);stroke-width:2}
+.viz .rc-dot.is-base{fill:var(--viz-base)}
+.viz .rc-dot.is-sim{fill:var(--viz-simcot)}
+.viz .rc-gain{font-size:13px;font-weight:600;fill:var(--gain)}
+.viz .rc-name{font-size:14px;font-weight:500;fill:var(--ink)}
+.viz .rc-tok{font-size:12px;font-weight:400;fill:var(--muted)}
+.viz .rc-hot{fill:var(--surface);opacity:0;transition:opacity .12s}
+.viz .rc-hot.is-on{opacity:1}
+
+/* ---------- #latent-scaling ---------- */
+.ls-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;margin-bottom:12px}
+.ls-title{margin:0;font-size:.875rem;line-height:1.5;color:var(--muted)}
+.ls-title b{font-weight:600;color:var(--ink-2)}
+.ls-head .legend{font-size:.8125rem}
+.ls-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 28px}
+.ls-panel{min-width:0}
+.ls-name{margin:0 0 2px;font-size:.875rem;line-height:1.4;font-weight:600;color:var(--ink)}
+.ls-viz{height:150px;border-radius:6px;touch-action:pan-y}
+.ls-layer{position:absolute;inset:0}
+
+.viz .ls-grid-line{stroke:var(--viz-grid);stroke-width:1}
+.viz .ls-tick{font-size:12px;fill:var(--muted)}
+.viz .ls-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.viz .ls-line.is-sim{stroke:var(--viz-simcot)}
+.viz .ls-line.is-base{stroke:var(--viz-base)}
+.viz .ls-dot{stroke:var(--white);stroke-width:2}
+.viz .ls-dot.is-sim{fill:var(--viz-simcot)}
+.viz .ls-dot.is-base{fill:var(--viz-base)}
+.viz .ls-end{font-size:12px;fill:var(--muted)}
+.viz .ls-end.is-sim{fill:var(--ink);font-weight:600}
+.viz .ls-cross{stroke:var(--viz-axis);stroke-width:1;opacity:0}
+.viz .ls-cross.is-on{opacity:1}
+
+@media (prefers-reduced-motion:no-preference){
+  .rc-viz svg.is-fresh{animation:rc-fade .28s ease-out}
+}
+@keyframes rc-fade{from{opacity:.25}to{opacity:1}}
+
+@media (max-width:860px){
+  .ls-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px}
+}
+@media (max-width:600px){
+  .rc,.ls{padding:14px 14px 12px}
+}
+@media (max-width:520px){
+  .ls-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .ls-viz{height:124px}
+}
+@media (max-width:359px){
+  .rc,.ls{padding:12px 12px 10px}
+  .rs-long{display:none}
+  .rs-short{display:inline}
+}

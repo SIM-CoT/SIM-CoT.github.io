@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIM-CoT: Supervised Implicit Chain-of-Thought</title>
+  <meta name="description" content="SIM-CoT adds step-level supervision to implicit chain-of-thought. An auxiliary decoder aligns each latent with one reasoning step during training and is removed at inference. ICLR 2026.">
+  <meta name="theme-color" content="#f6f8f8">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SIM-CoT: Supervised Implicit Chain-of-Thought">
+  <meta property="og:description" content="Step-level supervision makes implicit chain-of-thought stable, scalable and interpretable. ICLR 2026.">
+  <meta property="og:url" content="https://internlm.github.io/SIM-CoT/">
+  <meta property="og:image" content="https://internlm.github.io/SIM-CoT/assets/img/social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SIM-CoT: Supervised Implicit Chain-of-Thought">
+  <meta name="twitter:description" content="Step-level supervision makes implicit chain-of-thought stable, scalable and interpretable. ICLR 2026.">
+  <meta name="twitter:image" content="https://internlm.github.io/SIM-CoT/assets/img/social.png">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/dm-serif-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/demo.css">
+  <link rel="stylesheet" href="assets/css/results.css">
+  <link rel="stylesheet" href="assets/css/cases.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="SIM-CoT, back to top">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#1b2126"/><rect x="5.5" y="11" width="6" height="10" rx="2" fill="#7fc2b2"/><rect x="13" y="11" width="6" height="10" rx="2" fill="#6fb3ea"/><rect x="20.5" y="11" width="6" height="10" rx="2" fill="#f2a65a"/></svg>
+        <span>SIM<span class="brand-accent">-CoT</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="#problem">Problem</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#interpretability">Interpretability</a>
+        <a href="#citation">Citation</a>
+      </nav>
+    </header>
+  </div>
+
+  <main id="main">
+    <section class="hero wrap" id="top" aria-labelledby="page-title">
+      <p class="venue-pill"><span>ICLR 2026</span></p>
+      <h1 id="page-title"><span class="h1-accent">SIM</span>-CoT</h1>
+      <p class="hero-subtitle">Supervised Implicit Chain-of-Thought</p>
+
+      <p class="authors">
+        <span class="author"><a href="https://github.com/Wiselnn570">Xilin Wei</a><sup>1,2</sup></span>,
+        <span class="author"><a href="https://scholar.google.de/citations?user=Qe6F4J4AAAAJ&amp;hl=en">Xiaoran Liu</a><sup>1,4</sup></span>,
+        <span class="author"><a href="https://yuhangzang.github.io">Yuhang Zang</a><sup>2</sup><svg class="corr" viewBox="0 0 16 16" role="img" aria-label="corresponding author"><rect x="1.5" y="3.5" width="13" height="9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m2.2 4.6 5.8 4.3 5.8-4.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>,
+        <span class="author"><a href="https://lightdxy.github.io">Xiaoyi Dong</a><sup>2</sup></span>,
+        <span class="author"><a href="https://scholar.google.com/citations?user=sJkqsqkAAAAJ&amp;hl=en">Yuhang Cao</a><sup>2</sup></span>,
+        <span class="author"><a href="https://myownskyw7.github.io/">Jiaqi Wang</a><sup>2,4</sup><svg class="corr" viewBox="0 0 16 16" role="img" aria-label="corresponding author"><rect x="1.5" y="3.5" width="13" height="9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m2.2 4.6 5.8 4.3 5.8-4.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>,
+        <span class="author"><a href="https://xpqiu.github.io/en.html">Xipeng Qiu</a><sup>1,4</sup></span>,
+        <span class="author"><a href="http://dahua.site/">Dahua Lin</a><sup>2,3</sup></span>
+      </p>
+      <p class="affiliations">
+        <span><sup>1</sup>Fudan University</span>
+        <span><sup>2</sup>Shanghai AI Laboratory</span>
+        <span><sup>3</sup>The Chinese University of Hong Kong</span>
+        <span><sup>4</sup>Shanghai Innovation Institute</span>
+      </p>
+      <p class="author-notes"><svg class="corr" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="3.5" width="13" height="9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m2.2 4.6 5.8 4.3 5.8-4.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Corresponding authors</p>
+
+      <div class="hero-actions">
+        <a class="button primary" href="https://arxiv.org/pdf/2509.20317">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+          <span>Paper</span>
+        </a>
+        <a class="button" href="https://arxiv.org/abs/2509.20317">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 5h6a3.5 3.5 0 0 1 3.5 3.5V20a2.5 2.5 0 0 0-2.5-2.5h-7z"/><path d="M21.5 5h-6A3.5 3.5 0 0 0 12 8.5V20a2.5 2.5 0 0 1 2.5-2.5h7z"/></svg>
+          <span>arXiv</span>
+        </a>
+        <a class="button" href="https://github.com/InternLM/SIM-CoT">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297C5.37.297 0 5.67 0 12.297c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.043-1.61-4.043-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.237 1.838 1.237 1.07 1.835 2.807 1.305 3.492.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.931 0-1.31.469-2.381 1.236-3.221-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.301 1.23a11.5 11.5 0 0 1 3.003-.404c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.652.241 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.61-2.805 5.628-5.475 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          <span>Code</span>
+        </a>
+        <a class="button" href="https://huggingface.co/collections/Wiselnn/sim-cot-supervised-implicit-chain-of-thought-68d895b00576f6166c19ab4f">
+          <img src="assets/icons/huggingface.svg" width="19" height="19" alt="">
+          <span>Models</span>
+        </a>
+        <a class="button" href="#citation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 7H5.5v5h4c0 2.5-1.2 4-3.5 5"/><path d="M18.5 7h-4v5h4c0 2.5-1.2 4-3.5 5"/></svg>
+          <span>BibTeX</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="teaser wrap" aria-labelledby="teaser-title">
+      <div class="teaser-copy">
+        <p class="eyebrow">Implicit reasoning, made visible</p>
+        <h2 id="teaser-title">Think in latents.<br>Decode on demand.</h2>
+        <p>SIM-CoT reasons through a few continuous latent tokens instead of a written chain of thought, then answers. The decoder that supervises each latent during training is removed at inference, and can be attached again to read every latent as an explicit step.</p>
+      </div>
+      <figure class="demo" id="demo" aria-label="Example from the paper: SIM-CoT answers a GSM8k question with implicit latents, then decodes them into steps">
+        <div class="demo-fallback">
+          <img src="assets/img/fig-case-watermelon.webp" width="1859" height="630" alt="A watermelon word problem is embedded and passed to the LLM, which produces implicit latent tokens and the answer 21. The optional decoder reads the latents as 0.3*120=36, (120-36)*3/4=63 and 84-63=21.">
+        </div>
+      </figure>
+    </section>
+
+    <section class="wrap" aria-label="Key results">
+      <div class="stats">
+        <div class="stat">
+          <p class="stat-value is-up">+8.2</p>
+          <p class="stat-label">points over Coconut</p>
+          <p class="stat-note">GPT-2 · GSM8k-Aug</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value is-up">+3.0</p>
+          <p class="stat-label">points over CODI</p>
+          <p class="stat-note">LLaMA 3.1 8B · GSM8k-Aug</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value">2.3×</p>
+          <p class="stat-label">fewer tokens than explicit CoT, with 2.1 points higher accuracy</p>
+          <p class="stat-note">GPT-2 · GSM8k-Aug</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value">0</p>
+          <p class="stat-label">added inference overhead</p>
+          <p class="stat-note">The decoder is used only in training</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="abstract" aria-labelledby="abstract-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Abstract</p>
+            <h2 id="abstract-title">Stable, scalable and interpretable implicit reasoning.</h2>
+          </div>
+          <p class="abstract-text">Implicit Chain-of-Thought (CoT) methods offer a token-efficient alternative to explicit CoT reasoning in Large Language Models (LLMs), but a persistent performance gap has limited their adoption. We identify a core <b>latent instability issue</b> when scaling the computational budget of implicit CoT: as the number of reasoning tokens increases, training often becomes unstable and collapses. Our analysis shows that this instability arises from latent representations becoming homogeneous and losing semantic diversity, caused by insufficient step-level supervision in current implicit CoT methods. To address this, we propose <b>SIM-CoT</b>, a plug-and-play training module that introduces step-level supervision to stabilize and enrich the latent reasoning space. SIM-CoT employs an auxiliary decoder during training to align each implicit token with its corresponding explicit reasoning step, ensuring latent states capture distinct and meaningful information. The auxiliary decoder is removed at inference, preserving the efficiency of implicit CoT with no added overhead. It also provides interpretability by projecting each latent token onto an explicit reasoning vocabulary, enabling per-step visualization and diagnosis. SIM-CoT significantly improves both in-domain accuracy and out-of-domain stability of implicit CoT methods, boosting Coconut by +8.2% on GPT-2 and CODI by +3.0% on LLaMA-3.1 8B. It further surpasses the explicit CoT baseline on GPT-2 by 2.1% with 2.3× greater token efficiency, while closing the performance gap on larger models like LLaMA-3.1 8B.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section band" id="problem" aria-labelledby="problem-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The problem</p>
+            <h2 id="problem-title">More latents should help. Instead, training collapses.</h2>
+          </div>
+          <div class="lead">
+            <p>Explicit CoT gets better with more reasoning tokens, so the natural move for implicit CoT is to add latents. With Coconut, accuracy rises from one to four latents, then collapses to 12.5% at five. The collapsed latents become nearly identical, drift away from the vocabulary embedding space and lose operator information.</p>
+          </div>
+        </div>
+
+        <div class="figure-split">
+        <figure class="paper-figure">
+          <a class="zoom" href="assets/img/fig-instability.webp" aria-label="Enlarge Figure 1"><img src="assets/img/fig-instability.webp" width="2281" height="1513" loading="lazy" decoding="async" alt="Figure 1 of the paper. (a) Coconut training accuracy as latents are added one stage at a time, dropping to a worst point of 12.5% after the fifth latent. (b) Number, operator and answer accuracy for 1, 2, 4 and 5 latents and for the failed 5-latent model, where operator accuracy is 4.7. (c) Latent distance narrows while vocabulary distance grows in the failed model. (d) A normal model decodes numbers and operators; a failed model decodes mostly numbers in both latents."></a>
+          <figcaption><b>Figure 1.</b> Coconut trained on GSM8k-Aug with a growing number of latents.</figcaption>
+        </figure>
+
+        <div class="findings">
+          <div class="finding">
+            <span class="tag" title="Figure 1(a)">a</span>
+            <h4>Accuracy collapses</h4>
+            <p>Accuracy improves up to four latents. With five it drops to 12.5% and keeps swinging.</p>
+          </div>
+          <div class="finding">
+            <span class="tag" title="Figure 1(b)">b</span>
+            <h4>Operators disappear</h4>
+            <p>Operator accuracy of the decoded latents falls from 83.0 to 4.7 in the failed five-latent model.</p>
+          </div>
+          <div class="finding">
+            <span class="tag" title="Figure 1(c)">c</span>
+            <h4>Latents converge</h4>
+            <p>Pairwise latent distance falls to 4.21, far below any healthy setting (20.30–28.34), and distance to the vocabulary center rises to 39.39.</p>
+          </div>
+          <div class="finding">
+            <span class="tag" title="Figure 1(d)">d</span>
+            <h4>Latents say the same thing</h4>
+            <p>Both latents of a failed model decode mostly to numbers. A normal model keeps operators in its second latent.</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="method" aria-labelledby="method-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Method</p>
+            <h2 id="method-title">Supervise every latent step.</h2>
+          </div>
+          <div class="lead">
+            <p>Coconut supervises only the answer, and CODI distills a whole trajectory. Neither tells the model which latent should encode which step. SIM-CoT adds an auxiliary decoder during training that must generate the <i>k</i>-th reasoning step from the <i>k</i>-th latent alone.</p>
+          </div>
+        </div>
+
+        <div class="figure-split is-reversed">
+        <figure class="paper-figure">
+          <a class="zoom" href="assets/img/fig-framework.webp" aria-label="Enlarge Figure 2"><img src="assets/img/fig-framework.webp" width="2360" height="1193" loading="lazy" decoding="async" alt="Figure 2 of the paper. Coconut applies only answer-level supervision with a cross-entropy loss on the answer. CODI adds trajectory-level supervision by distilling hidden states from an explicit-CoT teacher. SIM-CoT feeds each implicit CoT token into a decoder model that predicts the corresponding explicit reasoning step, with a cross-entropy loss on both the step prediction and the answer."></a>
+          <figcaption><b>Figure 2.</b> Coconut (top left), CODI (top right) and SIM-CoT (bottom).</figcaption>
+        </figure>
+
+        <div class="granularity">
+          <div class="gran">
+            <div class="gran-head">
+              <div class="gran-bar" aria-hidden="true"><i></i><i></i><i></i><i class="ans"></i></div>
+              <p class="gran-level">Answer-level</p>
+              <h4>Coconut</h4>
+            </div>
+            <p>Cross-entropy on the final answer only. The intermediate latents are left weakly constrained.</p>
+          </div>
+          <div class="gran">
+            <div class="gran-head">
+              <div class="gran-bar" aria-hidden="true"><i class="traj"></i><i class="traj"></i><i class="traj"></i><i class="ans"></i></div>
+              <p class="gran-level">Trajectory-level</p>
+              <h4>CODI</h4>
+            </div>
+            <p>Distills from an explicit-CoT teacher by aligning hidden states of the full reasoning trajectory.</p>
+          </div>
+          <div class="gran is-ours">
+            <div class="gran-head">
+              <div class="gran-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="ans"></i></div>
+              <p class="gran-level">Step-level</p>
+              <h4>SIM-CoT</h4>
+            </div>
+            <p>Aligns each latent with its own reasoning step through the auxiliary decoder, so every latent carries one step.</p>
+          </div>
+        </div>
+        </div>
+
+        <div class="equations" role="group" aria-label="Training formulation">
+          <div class="eq">
+            <p class="eq-label">Latents</p>
+            <p class="math" aria-label="z k equals H theta of U k minus 1; U k equals U k minus 1 concatenated with z k"><i>z</i><sub><i>k</i></sub><span class="op">=</span><i>H</i><sub><i>θ</i></sub>(<i>U</i><sup>(<i>k</i>−1)</sup>),&ensp;<i>U</i><sup>(<i>k</i>)</sup><span class="op">=</span><i>U</i><sup>(<i>k</i>−1)</sup><span class="op">⊕</span><i>z</i><sub><i>k</i></sub></p>
+            <p class="eq-note">For <i>K</i> fixed steps, the last hidden state is fed back as the next input.</p>
+          </div>
+          <div class="eq">
+            <p class="eq-label">Step supervision</p>
+            <p class="math" aria-label="L step equals minus the sum over k and t of log p phi of y k t given z k and y k less than t"><i>ℒ</i><sub>step</sub><span class="op">=</span>−<span class="big">∑</span><sub><i>k</i>,<i>t</i></sub>&thinsp;log&thinsp;<i>p</i><sub><i>φ</i></sub>(<i>y</i><sub><i>k</i>,<i>t</i></sub>&thinsp;|&thinsp;<i>z</i><sub><i>k</i></sub>,&thinsp;<i>y</i><sub><i>k</i>,&lt;<i>t</i></sub>)</p>
+            <p class="eq-note">The decoder sees only <i>z<sub>k</sub></i> and must generate step <i>s<sub>k</sub></i>.</p>
+          </div>
+          <div class="eq">
+            <p class="eq-label">Objective</p>
+            <p class="math" aria-label="L equals lambda step times L step plus lambda lm times L ans-lm"><i>ℒ</i><span class="op">=</span><i>λ</i><sub>step</sub><i>ℒ</i><sub>step</sub><span class="op">+</span><i>λ</i><sub>lm</sub><i>ℒ</i><sub>ans-lm</sub></p>
+            <p class="eq-note">Step gradients flow through <i>z</i><sub>1:<i>K</i></sub> into the LLM.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <span class="callout-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+          <p><b>At inference the decoder is removed.</b> The model runs its <i>K</i> latent steps and decodes the answer directly, so decoding takes <i>T</i>&thinsp;+&thinsp;<i>K</i>&thinsp;+&thinsp;<i>L<sub>a</sub></i> positions, the same as the implicit method it is added to.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section band" id="results" aria-labelledby="results-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Results</p>
+            <h2 id="results-title">Consistent gains on every backbone.</h2>
+          </div>
+          <div class="lead">
+            <p>Added to Coconut or CODI, SIM-CoT raises GSM8k-Aug accuracy on GPT-2 and on LLaMA 3 models from 1B to 8B without adding tokens. On GPT-2 it is the first training-based implicit method to surpass explicit CoT.</p>
+            <p class="small muted">Trained on GSM8k-Aug. In-domain: GSM8k-Aug test set. Out-of-domain: GSM-Hard, MultiArith and SVAMP.</p>
+          </div>
+        </div>
+
+        <div id="results-explorer" class="results-explorer">
+        <div class="results-tabs" data-tabs>
+          <div class="controls">
+            <div class="seg" role="tablist" aria-label="Backbone">
+              <button type="button" role="tab" id="tab-gpt2" aria-controls="panel-gpt2" aria-selected="true" data-backbone="gpt2">GPT-2</button>
+              <button type="button" role="tab" id="tab-llama32_1b" aria-controls="panel-llama32_1b" aria-selected="false" tabindex="-1" data-backbone="llama32_1b">LLaMA 3.2 1B</button>
+              <button type="button" role="tab" id="tab-llama32_3b" aria-controls="panel-llama32_3b" aria-selected="false" tabindex="-1" data-backbone="llama32_3b">LLaMA 3.2 3B</button>
+              <button type="button" role="tab" id="tab-llama31_8b" aria-controls="panel-llama31_8b" aria-selected="false" tabindex="-1" data-backbone="llama31_8b">LLaMA 3.1 8B</button>
+            </div>
+          </div>
+          <div id="results-chart" class="results-chart"></div>
+          <div class="tab-panel" role="tabpanel" id="panel-gpt2" aria-labelledby="tab-gpt2" data-backbone="gpt2">
+            <div class="table-scroll">
+              <table class="data-table results-table">
+                <caption>Table 1 · GPT-2. Accuracy (%) and number of generated tokens.</caption>
+                <thead>
+                  <tr class="group"><th scope="col"><span class="sr-only">Method</span></th><th scope="colgroup" colspan="2">In-domain</th><th scope="colgroup" colspan="5">Out-of-domain</th></tr>
+                  <tr><th scope="col">Method</th><th scope="col">GSM8k-Aug</th><th scope="col">Tokens</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th><th scope="col">Average</th><th scope="col">Tokens</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="is-ref"><th scope="row">SFT-CoT <span class="row-tag">explicit</span></th><td>42.7</td><td class="tok">27.6</td><td>9.0</td><td>85.0</td><td>41.6</td><td>45.2</td><td class="tok">24.7</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">No-CoT</th><td>19.1</td><td class="tok">2.2</td><td>4.3</td><td>41.1</td><td>16.4</td><td>20.6</td><td class="tok">1.4</td></tr>
+                  <tr><th scope="row">iCoT</th><td>30.1</td><td class="tok">2.2</td><td>5.7</td><td>55.5</td><td>29.4</td><td>30.2</td><td class="tok">1.4</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">Coconut</th><td>36.6</td><td class="tok">12.2</td><td>8.1</td><td>83.5</td><td>36.2</td><td>42.6</td><td class="tok">11.4</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span> <a class="ckpt" href="https://huggingface.co/internlm/SIM_COT-GPT2-Coconut" aria-label="Checkpoint internlm/SIM_COT-GPT2-Coconut on Hugging Face" title="internlm/SIM_COT-GPT2-Coconut"><img src="assets/icons/huggingface.svg" width="16" height="16" alt=""></a></th><td class="best">44.8<span class="gain">+8.2</span></td><td class="tok">12.2</td><td class="best">9.3</td><td class="best">90.8</td><td class="best">40.7</td><td class="best">46.9<span class="gain">+4.3</span></td><td class="tok">11.4</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">CODI</th><td>42.0</td><td class="tok">12.2</td><td class="best">9.4</td><td class="best">93.0</td><td>41.7</td><td>48.0</td><td class="tok">12.6</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span> <a class="ckpt" href="https://huggingface.co/internlm/SIM_COT-GPT2-CODI" aria-label="Checkpoint internlm/SIM_COT-GPT2-CODI on Hugging Face" title="internlm/SIM_COT-GPT2-CODI"><img src="assets/icons/huggingface.svg" width="16" height="16" alt=""></a></th><td class="best">42.6<span class="gain">+0.6</span></td><td class="tok">12.2</td><td class="best">9.4</td><td>92.8</td><td class="best">42.6</td><td class="best">48.3<span class="gain">+0.3</span></td><td class="tok">12.6</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="panel-llama32_1b" aria-labelledby="tab-llama32_1b" data-backbone="llama32_1b">
+            <div class="table-scroll">
+              <table class="data-table results-table">
+                <caption>Table 2 · LLaMA 3.2 1B. Accuracy (%) and number of generated tokens.</caption>
+                <thead>
+                  <tr class="group"><th scope="col"><span class="sr-only">Method</span></th><th scope="colgroup" colspan="2">In-domain</th><th scope="colgroup" colspan="5">Out-of-domain</th></tr>
+                  <tr><th scope="col">Method</th><th scope="col">GSM8k-Aug</th><th scope="col">Tokens</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th><th scope="col">Average</th><th scope="col">Tokens</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="is-ref"><th scope="row">SFT-CoT <span class="row-tag">explicit</span></th><td>58.4</td><td class="tok">25.3</td><td>13.9</td><td>96.7</td><td>65.7</td><td>58.8</td><td class="tok">23.1</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">No-CoT</th><td>28.8</td><td class="tok">1.2</td><td>6.3</td><td>50.3</td><td>26.7</td><td>27.8</td><td class="tok">1.9</td></tr>
+                  <tr><th scope="row">iCoT</th><td>19.0</td><td class="tok">1.2</td><td>4.4</td><td>39.0</td><td>40.9</td><td>28.1</td><td class="tok">1.9</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">Coconut</th><td>33.2</td><td class="tok">13.2</td><td>7.0</td><td>63.3</td><td>43.7</td><td>38.0</td><td class="tok">11.9</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span></th><td class="best">42.2<span class="gain">+9.0</span></td><td class="tok">13.2</td><td class="best">9.3</td><td class="best">87.7</td><td class="best">43.9</td><td class="best">47.0<span class="gain">+9.0</span></td><td class="tok">11.9</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">CODI</th><td>52.7</td><td class="tok">13.2</td><td>11.9</td><td>95.0</td><td>60.6</td><td>55.8</td><td class="tok">13.4</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span> <a class="ckpt" href="https://huggingface.co/internlm/SIM_COT-LLaMA3-CODI-1B" aria-label="Checkpoint internlm/SIM_COT-LLaMA3-CODI-1B on Hugging Face" title="internlm/SIM_COT-LLaMA3-CODI-1B"><img src="assets/icons/huggingface.svg" width="16" height="16" alt=""></a></th><td class="best">56.1<span class="gain">+3.4</span></td><td class="tok">13.2</td><td class="best">12.7</td><td class="best">96.2</td><td class="best">61.5</td><td class="best">56.8<span class="gain">+1.0</span></td><td class="tok">13.4</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="panel-llama32_3b" aria-labelledby="tab-llama32_3b" data-backbone="llama32_3b">
+            <div class="table-scroll">
+              <table class="data-table results-table">
+                <caption>Table 3 · LLaMA 3.2 3B. Accuracy (%) and number of generated tokens.</caption>
+                <thead>
+                  <tr class="group"><th scope="col"><span class="sr-only">Method</span></th><th scope="colgroup" colspan="2">In-domain</th><th scope="colgroup" colspan="5">Out-of-domain</th></tr>
+                  <tr><th scope="col">Method</th><th scope="col">GSM8k-Aug</th><th scope="col">Tokens</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th><th scope="col">Average</th><th scope="col">Tokens</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="is-ref"><th scope="row">SFT-CoT <span class="row-tag">explicit</span></th><td>71.5</td><td class="tok">27.7</td><td>17.0</td><td>98.3</td><td>71.0</td><td>62.1</td><td class="tok">22.4</td></tr>
+                  <tr><th scope="row">No-CoT</th><td>38.3</td><td class="tok">1.2</td><td>9.5</td><td>88.7</td><td>52.9</td><td>50.4</td><td class="tok">1.4</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">CODI</th><td>60.8</td><td class="tok">7.2</td><td>14.3</td><td>98.7</td><td>73.3</td><td>62.1</td><td class="tok">7.5</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span> <a class="ckpt" href="https://huggingface.co/internlm/SIM_COT-LLaMA3-CODI-3B" aria-label="Checkpoint internlm/SIM_COT-LLaMA3-CODI-3B on Hugging Face" title="internlm/SIM_COT-LLaMA3-CODI-3B"><img src="assets/icons/huggingface.svg" width="16" height="16" alt=""></a></th><td class="best">62.3<span class="gain">+1.5</span></td><td class="tok">7.2</td><td class="best">14.6</td><td class="best">98.8</td><td class="best">74.9</td><td class="best">62.8<span class="gain">+0.7</span></td><td class="tok">7.5</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="panel-llama31_8b" aria-labelledby="tab-llama31_8b" data-backbone="llama31_8b">
+            <div class="table-scroll">
+              <table class="data-table results-table">
+                <caption>Table 3 · LLaMA 3.1 8B. Accuracy (%) and number of generated tokens.</caption>
+                <thead>
+                  <tr class="group"><th scope="col"><span class="sr-only">Method</span></th><th scope="colgroup" colspan="2">In-domain</th><th scope="colgroup" colspan="5">Out-of-domain</th></tr>
+                  <tr><th scope="col">Method</th><th scope="col">GSM8k-Aug</th><th scope="col">Tokens</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th><th scope="col">Average</th><th scope="col">Tokens</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="is-ref"><th scope="row">SFT-CoT <span class="row-tag">explicit</span></th><td>71.7</td><td class="tok">27.4</td><td>16.5</td><td>98.3</td><td>73.1</td><td>62.6</td><td class="tok">22.2</td></tr>
+                  <tr><th scope="row">No-CoT</th><td>39.5</td><td class="tok">1.2</td><td>9.8</td><td>88.0</td><td>55.3</td><td>51.0</td><td class="tok">1.6</td></tr>
+                </tbody>
+                <tbody>
+                  <tr><th scope="row">CODI</th><td>61.1</td><td class="tok">7.2</td><td>15.5</td><td>99.5</td><td>78.1</td><td>64.4</td><td class="tok">7.5</td></tr>
+                  <tr class="is-ours"><th scope="row"><span class="plus">+ SIM-CoT</span> <a class="ckpt" href="https://huggingface.co/internlm/SIM_COT-LLaMA3-CODI-8B" aria-label="Checkpoint internlm/SIM_COT-LLaMA3-CODI-8B on Hugging Face" title="internlm/SIM_COT-LLaMA3-CODI-8B"><img src="assets/icons/huggingface.svg" width="16" height="16" alt=""></a></th><td class="best">64.1<span class="gain">+3.0</span></td><td class="tok">7.2</td><td class="best">16.3</td><td class="best">100.0</td><td class="best">79.4</td><td class="best">65.2<span class="gain">+0.8</span></td><td class="tok">7.5</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="subhead">
+          <h3>More latents, no collapse.</h3>
+          <p id="latent-scaling-lead">Coconut and SIM-CoT on GPT-2 as the number of latents grows. Each latent spans two implicit tokens.</p>
+        </div>
+        <div id="latent-scaling" class="latent-scaling"></div>
+
+        <div class="expanders">
+          <details class="more" id="ablation-decoder">
+            <summary>Decoder size <span class="hint">LLaMA 3.2 1B with 1B, 3B and 8B decoders</span></summary>
+            <div class="more-body">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption>Accuracy (%). The baseline is CODI on LLaMA 3.2 1B.</caption>
+                  <thead>
+                    <tr class="group"><th></th><th>In-domain</th><th colspan="3">Out-of-domain</th></tr>
+                    <tr><th scope="col">Decoder</th><th scope="col">GSM8k-Aug</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><th scope="row">Baseline</th><td>52.7</td><td>11.9</td><td>95.0</td><td>60.6</td></tr>
+                    <tr class="is-ours"><th scope="row">+ 1B decoder</th><td class="best">56.1</td><td class="best">12.7</td><td class="best">96.2</td><td class="best">61.5</td></tr>
+                    <tr><th scope="row">+ 3B decoder</th><td>50.4</td><td>11.6</td><td>95.6</td><td>59.8</td></tr>
+                    <tr><th scope="row">+ 8B decoder</th><td>50.0</td><td>11.7</td><td>94.2</td><td>56.8</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+          <details class="more" id="ablation-soft">
+            <summary>Soft thinking <span class="hint">Training-free soft thinking on top of Coconut and SIM-CoT</span></summary>
+            <div class="more-body">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption>Accuracy (%).</caption>
+                  <thead>
+                    <tr><th scope="col">Method</th><th scope="col">GSM8k-Aug</th><th scope="col">GSM-Hard</th><th scope="col">MultiArith</th><th scope="col">SVAMP</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><th scope="row">Coconut</th><td>36.6</td><td>8.1</td><td>83.5</td><td>36.2</td></tr>
+                    <tr><th scope="row">+ soft thinking</th><td>36.7</td><td>8.3</td><td>85.2</td><td>36.0</td></tr>
+                    <tr class="is-ours"><th scope="row">SIM-CoT</th><td>44.8</td><td>9.3</td><td>90.8</td><td>40.7</td></tr>
+                    <tr class="is-ours"><th scope="row">+ soft thinking</th><td class="best">45.0</td><td class="best">9.4</td><td class="best">91.5</td><td class="best">40.8</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+          <details class="more" id="training-setup">
+            <summary>Training setup <span class="hint">Learning rates, epochs and curriculum</span></summary>
+            <div class="more-body">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr><th scope="col">Model</th><th scope="col">Method</th><th scope="col">Learning rate</th><th scope="col">Epochs</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><th scope="row">GPT-2</th><td>Coconut</td><td>1 × 10<sup>−4</sup></td><td>15 + curriculum</td></tr>
+                    <tr><th scope="row">LLaMA 1B</th><td>Coconut</td><td>1 × 10<sup>−4</sup></td><td>15 + curriculum</td></tr>
+                    <tr><th scope="row">GPT-2</th><td>CODI</td><td>3 × 10<sup>−3</sup></td><td>40</td></tr>
+                    <tr><th scope="row">LLaMA 1B</th><td>CODI</td><td>8 × 10<sup>−4</sup></td><td>10</td></tr>
+                    <tr><th scope="row">LLaMA 3B</th><td>CODI</td><td>3 × 10<sup>−4</sup></td><td>8</td></tr>
+                    <tr><th scope="row">LLaMA 8B</th><td>CODI</td><td>1 × 10<sup>−4</sup></td><td>6</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small muted" style="margin:14px 0 0">Adam (β<sub>1</sub> = 0.9, β<sub>2</sub> = 0.999), weight decay 0.1, batch size 128 for GPT-2 and LLaMA 1B and 64 for LLaMA 3B and 8B, early stopping with a patience of 3 epochs. Coconut curriculum: every three epochs one explicit step is replaced by a latent until the maximum is reached, then 15 more epochs.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="interpretability" aria-labelledby="interp-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Interpretability</p>
+            <h2 id="interp-title">Read every latent.</h2>
+          </div>
+          <div class="lead">
+            <p>Each latent is trained to carry one step, so the training decoder can translate latents back into text. On these GSM8k problems the decoded steps form a chain that ends at the correct answer.</p>
+          </div>
+        </div>
+
+        <div id="case-explorer" class="case-explorer"></div>
+
+        <div class="subhead">
+          <h3>Distinct, but still grounded.</h3>
+          <p>SIM-CoT pushes latents further apart than any setting without step supervision, while keeping them near the vocabulary embedding space.</p>
+        </div>
+        <div id="latent-geometry" class="latent-geometry"></div>
+
+        <div class="expanders">
+          <details class="more">
+            <summary>Latents vs. vocabulary embeddings <span class="hint">PCA view of normal, failed and SIM-CoT latents</span></summary>
+            <div class="more-body">
+              <figure class="paper-figure is-narrow">
+                <a class="zoom" href="assets/img/fig-latent-pca.webp" aria-label="Enlarge Figure 6"><img src="assets/img/fig-latent-pca.webp" width="2068" height="1559" loading="lazy" decoding="async" alt="Appendix figure: PCA projections of two implicit tokens against the vocabulary embeddings. Normal implicit tokens are well separated near the vocabulary cloud; failed tokens collapse together and drift far away; after SIM-CoT the tokens are separated again and stay close to the vocabulary."></a>
+                <figcaption><b>Figure 6.</b> Rows: normal implicit tokens, failed implicit tokens, and implicit tokens after SIM-CoT.</figcaption>
+              </figure>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section band" id="citation" aria-labelledby="cite-title">
+      <div class="wrap">
+        <div class="section-head stacked">
+          <p class="eyebrow">Citation</p>
+          <h2 id="cite-title">BibTeX</h2>
+        </div>
+        <div class="bibtex">
+          <button class="copy-btn" type="button" data-copy="#bibtex-text" aria-label="Copy BibTeX">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span class="copy-label">Copy</span>
+          </button>
+<pre id="bibtex-text">@inproceedings{wei2025simcot,
+  title={{SIM-COT}: Supervised Implicit Chain-of-Thought},
+  author={Wei, Xilin and Liu, Xiaoran and Zang, Yuhang and Dong, Xiaoyi and Cao, Yuhang and Wang, Jiaqi and Qiu, Xipeng and Lin, Dahua},
+  booktitle={International Conference on Learning Representations},
+  year={2026}
+}</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="#top" aria-label="SIM-CoT, back to top">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#1b2126"/><rect x="5.5" y="11" width="6" height="10" rx="2" fill="#7fc2b2"/><rect x="13" y="11" width="6" height="10" rx="2" fill="#6fb3ea"/><rect x="20.5" y="11" width="6" height="10" rx="2" fill="#f2a65a"/></svg>
+        <span>SIM<span class="brand-accent">-CoT</span></span>
+      </a>
+      <nav class="footer-links" aria-label="Resources">
+        <a href="https://arxiv.org/abs/2509.20317">arXiv</a>
+        <a href="https://github.com/InternLM/SIM-CoT">GitHub</a>
+        <a href="https://huggingface.co/collections/Wiselnn/sim-cot-supervised-implicit-chain-of-thought-68d895b00576f6166c19ab4f">Hugging Face</a>
+        <a href="#top">Back to top</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="assets/data/site-data.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/demo.js" defer></script>
+  <script src="assets/js/results.js" defer></script>
+  <script src="assets/js/cases.js" defer></script>
+</body>
+</html>

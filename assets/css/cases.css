@@ -1,0 +1,112 @@
+/* Interpretability section (assets/js/cases.js): Figure 7 case explorer and Table 4(b) latent geometry.
+   Step colours come from SIMCOT_DATA.stepColors. cases.js sets, on every evidence span and latent box:
+   --cx-c (accent: underline and box edge), --cx-c-soft, --cx-tint, --cx-hl (active) and --cx-wash (dimmed).
+   Text always stays in ink tokens. */
+
+/* Reserve the rendered height until the deferred script has run, so the page does not shift. */
+@media (scripting: enabled){
+  .case-explorer:empty:not([data-empty]){min-height:300px}
+  .latent-geometry:empty:not([data-empty]){min-height:270px}
+}
+
+/* ---------- case explorer ---------- */
+.cx{container:cx / inline-size}
+.cx-controls{margin-bottom:14px}
+.cx-card{padding:30px 32px 32px}
+.cx-panel{min-width:0}
+.cx-panel[hidden]{display:none}
+.cx-panel.is-active{animation:cx-in .22s ease-out}
+@keyframes cx-in{from{opacity:0}to{opacity:1}}
+
+.cx-q{margin:0 0 26px;max-width:52em;font-size:1.0625rem;line-height:1.85;color:var(--ink);text-wrap:pretty}
+.cx-ev{border-radius:3px;background-color:var(--cx-tint);box-shadow:0 -2px 0 var(--cx-tint),0 2px 0 var(--cx-tint);-webkit-box-decoration-break:clone;box-decoration-break:clone;text-decoration-line:underline;text-decoration-thickness:2px;text-decoration-color:var(--cx-c);text-underline-offset:4px;text-decoration-skip-ink:none;transition:background-color .15s,box-shadow .15s,text-decoration-color .15s}
+.cx-ev.is-on{background-color:var(--cx-hl);box-shadow:0 -2px 0 var(--cx-hl),0 2px 0 var(--cx-hl)}
+.cx-ev.is-off{background-color:var(--cx-wash);box-shadow:0 -2px 0 var(--cx-wash),0 2px 0 var(--cx-wash);text-decoration-color:var(--cx-c-soft)}
+
+.cx-chain{display:flex;align-items:center;min-width:0}
+.cx-latents{display:flex;align-items:stretch;min-width:0;margin:0;padding:0;list-style:none}
+.cx-item{display:flex;align-items:center;min-width:0}
+.cx-box{display:flex;flex-direction:column;justify-content:center;gap:1px;flex:0 1 auto;width:172px;min-width:max-content;padding:8px 14px 9px 16px;border-radius:var(--radius-sm);background-color:var(--cx-tint);box-shadow:inset 3px 0 0 var(--cx-c);transition:background-color .15s,box-shadow .15s}
+.cx-box.is-on{background-color:var(--cx-hl);box-shadow:inset 3px 0 0 var(--cx-c),0 0 0 1px var(--cx-c)}
+.cx-box.is-off{background-color:var(--cx-wash);box-shadow:inset 3px 0 0 var(--cx-c-soft)}
+.cx-box:focus-visible{outline-offset:2px;border-radius:var(--radius-sm)}
+.cx-label{font-size:.75rem;font-weight:600;line-height:1.35;letter-spacing:.2px;color:var(--ink-2)}
+.cx-expr{font-family:var(--mono);font-size:.9375rem;font-weight:500;line-height:1.4;color:var(--ink);white-space:nowrap}
+
+/* arrows between latents (same construction as the teaser animation) */
+.cx-link{position:relative;flex:none;display:block;width:20px;height:12px;margin:0 7px;color:var(--faint)}
+.cx-link::before{content:"";position:absolute;top:5.25px;left:0;right:1px;height:1.5px;border-radius:1px;background:currentColor}
+.cx-link::after{content:"";position:absolute;top:2.5px;right:1px;width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg)}
+
+.cx-result{display:flex;align-items:center;flex:none}
+.cx-answer{display:inline-flex;align-items:center;gap:7px;min-height:40px;margin:0;padding:6px 16px 6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--white);font-size:.9375rem;line-height:1.3;color:var(--ink-2);white-space:nowrap}
+.cx-answer b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.cx-check{width:16px;height:16px;flex:none;color:var(--gain)}
+
+/* narrower than the horizontal chain: latents stack, each as one row */
+@container cx (max-width:760px){
+  .cx-card{padding:20px 20px 22px}
+  .cx-q{margin-bottom:18px;font-size:1rem;line-height:1.8}
+  .cx-chain{flex-direction:column;align-items:stretch;max-width:26rem}
+  .cx-latents{flex-direction:column;align-items:stretch}
+  .cx-item{flex-direction:column;align-items:stretch}
+  .cx-box{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:14px;width:auto;min-width:0;padding:7px 14px 7px 16px}
+  .cx-label{flex:none;min-width:4.4em}
+  .cx-expr{min-width:0;overflow-wrap:anywhere;white-space:normal}
+  .cx-link{width:12px;height:16px;margin:2px 0 2px 22px}
+  .cx-link::before{top:0;bottom:1px;left:5.25px;right:auto;width:1.5px;height:auto}
+  .cx-link::after{top:auto;bottom:1px;left:2.5px;right:auto;transform:rotate(45deg)}
+  .cx-result{flex-direction:column;align-items:flex-start}
+  .cx-answer{min-height:36px;padding:5px 14px 5px 11px}
+}
+/* medium: the question beside the stacked chain */
+@container cx (min-width:560px) and (max-width:760px){
+  .cx-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,15.5rem);column-gap:28px;align-items:start}
+  .cx-q{margin:0}
+}
+/* phones: stacked, selector as a 3 x 2 grid */
+@container cx (max-width:559.98px){
+  .cx-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+  .cx-seg button{padding:6px}
+  .cx-card{padding:18px 16px 20px}
+  .cx-chain{max-width:none}
+}
+@container cx (max-width:330px){
+  .cx-seg button{font-size:.875rem}
+}
+
+/* ---------- latent geometry (Table 4(b)) ---------- */
+.lg{container:lg / inline-size;--lg-other:var(--viz-axis);--lg-fail:var(--muted)}
+.lg-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 48px;padding:20px 24px 14px}
+.lg-chart{min-width:0;margin:0}
+.lg-title{margin:0 0 8px;font-size:.9375rem;font-weight:600;line-height:1.4;color:var(--ink)}
+.lg-svg{display:block}
+.lg .lg-cat{fill:var(--ink-2);font-size:13px}
+.lg .lg-val{fill:var(--ink-2);font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums}
+.lg .lg-row.is-simcot .lg-cat,.lg .lg-row.is-fail .lg-cat{fill:var(--ink);font-weight:600}
+.lg .lg-row.is-simcot .lg-val,.lg .lg-row.is-fail .lg-val{fill:var(--ink);font-weight:700}
+.lg .lg-tick{fill:var(--muted);font-size:11.5px}
+.lg-grid,.lg-axis{stroke-width:1;shape-rendering:crispEdges}
+.lg-grid{stroke:var(--viz-grid)}
+.lg-axis{stroke:var(--viz-axis)}
+.lg-bar{fill:var(--lg-other)}
+.lg-row.is-fail .lg-bar{fill:var(--lg-fail)}
+.lg-row.is-simcot .lg-bar{fill:var(--viz-simcot)}
+.lg-hit{fill:transparent}
+.lg-band{fill:var(--surface);opacity:0;transition:opacity .12s}
+.lg-band.is-on{opacity:1}
+.lg-row,.lg-row:focus,.lg-row:focus-visible{outline:none}
+.lg-focus{fill:none;stroke:var(--accent);stroke-width:2;opacity:0}
+.lg-row:focus-visible .lg-focus{opacity:1}
+.lg-tip{white-space:nowrap}
+
+@container lg (max-width:600px){
+  .lg-card{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 16px 12px}
+}
+@container lg (min-width:600.02px) and (max-width:860px){
+  .lg-card{column-gap:28px;padding:18px 20px 12px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cx-panel.is-active{animation:none}
+}

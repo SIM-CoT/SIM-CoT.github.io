@@ -1,0 +1,860 @@
+{
+ "benchmarks": [
+  {
+   "id": "gsm8k",
+   "label": "GSM8k-Aug",
+   "domain": "in"
+  },
+  {
+   "id": "gsmhard",
+   "label": "GSM-Hard",
+   "domain": "out"
+  },
+  {
+   "id": "multiarith",
+   "label": "MultiArith",
+   "domain": "out"
+  },
+  {
+   "id": "svamp",
+   "label": "SVAMP",
+   "domain": "out"
+  }
+ ],
+ "main": {
+  "gpt2": {
+   "label": "GPT-2",
+   "table": "Table 1",
+   "rows": [
+    {
+     "method": "SFT-CoT",
+     "simcot": false,
+     "gsm8k": 42.7,
+     "gsm8k_tokens": 27.6,
+     "gsmhard": 9.0,
+     "multiarith": 85.0,
+     "svamp": 41.6,
+     "ood_avg": 45.2,
+     "ood_tokens": 24.7,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "No-CoT",
+     "simcot": false,
+     "gsm8k": 19.1,
+     "gsm8k_tokens": 2.2,
+     "gsmhard": 4.3,
+     "multiarith": 41.1,
+     "svamp": 16.4,
+     "ood_avg": 20.6,
+     "ood_tokens": 1.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "iCoT",
+     "simcot": false,
+     "gsm8k": 30.1,
+     "gsm8k_tokens": 2.2,
+     "gsmhard": 5.7,
+     "multiarith": 55.5,
+     "svamp": 29.4,
+     "ood_avg": 30.2,
+     "ood_tokens": 1.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "Coconut",
+     "simcot": false,
+     "gsm8k": 36.6,
+     "gsm8k_tokens": 12.2,
+     "gsmhard": 8.1,
+     "multiarith": 83.5,
+     "svamp": 36.2,
+     "ood_avg": 42.6,
+     "ood_tokens": 11.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "Coconut",
+     "simcot": true,
+     "gsm8k": 44.8,
+     "gsm8k_tokens": 12.2,
+     "gsmhard": 9.3,
+     "multiarith": 90.8,
+     "svamp": 40.7,
+     "ood_avg": 46.9,
+     "ood_tokens": 11.4,
+     "gain_id": "+8.2",
+     "gain_ood": "+4.3"
+    },
+    {
+     "method": "CODI",
+     "simcot": false,
+     "gsm8k": 42.0,
+     "gsm8k_tokens": 12.2,
+     "gsmhard": 9.4,
+     "multiarith": 93.0,
+     "svamp": 41.7,
+     "ood_avg": 48.0,
+     "ood_tokens": 12.6,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": true,
+     "gsm8k": 42.6,
+     "gsm8k_tokens": 12.2,
+     "gsmhard": 9.4,
+     "multiarith": 92.8,
+     "svamp": 42.6,
+     "ood_avg": 48.3,
+     "ood_tokens": 12.6,
+     "gain_id": "+0.6",
+     "gain_ood": "+0.3"
+    }
+   ]
+  },
+  "llama32_1b": {
+   "label": "LLaMA 3.2 1B",
+   "table": "Table 2",
+   "rows": [
+    {
+     "method": "SFT-CoT",
+     "simcot": false,
+     "gsm8k": 58.4,
+     "gsm8k_tokens": 25.3,
+     "gsmhard": 13.9,
+     "multiarith": 96.7,
+     "svamp": 65.7,
+     "ood_avg": 58.8,
+     "ood_tokens": 23.1,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "No-CoT",
+     "simcot": false,
+     "gsm8k": 28.8,
+     "gsm8k_tokens": 1.2,
+     "gsmhard": 6.3,
+     "multiarith": 50.3,
+     "svamp": 26.7,
+     "ood_avg": 27.8,
+     "ood_tokens": 1.9,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "iCoT",
+     "simcot": false,
+     "gsm8k": 19.0,
+     "gsm8k_tokens": 1.2,
+     "gsmhard": 4.4,
+     "multiarith": 39.0,
+     "svamp": 40.9,
+     "ood_avg": 28.1,
+     "ood_tokens": 1.9,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "Coconut",
+     "simcot": false,
+     "gsm8k": 33.2,
+     "gsm8k_tokens": 13.2,
+     "gsmhard": 7.0,
+     "multiarith": 63.3,
+     "svamp": 43.7,
+     "ood_avg": 38.0,
+     "ood_tokens": 11.9,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "Coconut",
+     "simcot": true,
+     "gsm8k": 42.2,
+     "gsm8k_tokens": 13.2,
+     "gsmhard": 9.3,
+     "multiarith": 87.7,
+     "svamp": 43.9,
+     "ood_avg": 47.0,
+     "ood_tokens": 11.9,
+     "gain_id": "+9.0",
+     "gain_ood": "+9.0"
+    },
+    {
+     "method": "CODI",
+     "simcot": false,
+     "gsm8k": 52.7,
+     "gsm8k_tokens": 13.2,
+     "gsmhard": 11.9,
+     "multiarith": 95.0,
+     "svamp": 60.6,
+     "ood_avg": 55.8,
+     "ood_tokens": 13.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": true,
+     "gsm8k": 56.1,
+     "gsm8k_tokens": 13.2,
+     "gsmhard": 12.7,
+     "multiarith": 96.2,
+     "svamp": 61.5,
+     "ood_avg": 56.8,
+     "ood_tokens": 13.4,
+     "gain_id": "+3.4",
+     "gain_ood": "+1.0"
+    }
+   ]
+  },
+  "llama32_3b": {
+   "label": "LLaMA 3.2 3B",
+   "table": "Table 3",
+   "rows": [
+    {
+     "method": "SFT-CoT",
+     "simcot": false,
+     "gsm8k": 71.5,
+     "gsm8k_tokens": 27.7,
+     "gsmhard": 17.0,
+     "multiarith": 98.3,
+     "svamp": 71.0,
+     "ood_avg": 62.1,
+     "ood_tokens": 22.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "No-CoT",
+     "simcot": false,
+     "gsm8k": 38.3,
+     "gsm8k_tokens": 1.2,
+     "gsmhard": 9.5,
+     "multiarith": 88.7,
+     "svamp": 52.9,
+     "ood_avg": 50.4,
+     "ood_tokens": 1.4,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": false,
+     "gsm8k": 60.8,
+     "gsm8k_tokens": 7.2,
+     "gsmhard": 14.3,
+     "multiarith": 98.7,
+     "svamp": 73.3,
+     "ood_avg": 62.1,
+     "ood_tokens": 7.5,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": true,
+     "gsm8k": 62.3,
+     "gsm8k_tokens": 7.2,
+     "gsmhard": 14.6,
+     "multiarith": 98.8,
+     "svamp": 74.9,
+     "ood_avg": 62.8,
+     "ood_tokens": 7.5,
+     "gain_id": "+1.5",
+     "gain_ood": "+0.7"
+    }
+   ]
+  },
+  "llama31_8b": {
+   "label": "LLaMA 3.1 8B",
+   "table": "Table 3",
+   "rows": [
+    {
+     "method": "SFT-CoT",
+     "simcot": false,
+     "gsm8k": 71.7,
+     "gsm8k_tokens": 27.4,
+     "gsmhard": 16.5,
+     "multiarith": 98.3,
+     "svamp": 73.1,
+     "ood_avg": 62.6,
+     "ood_tokens": 22.2,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "No-CoT",
+     "simcot": false,
+     "gsm8k": 39.5,
+     "gsm8k_tokens": 1.2,
+     "gsmhard": 9.8,
+     "multiarith": 88.0,
+     "svamp": 55.3,
+     "ood_avg": 51.0,
+     "ood_tokens": 1.6,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": false,
+     "gsm8k": 61.1,
+     "gsm8k_tokens": 7.2,
+     "gsmhard": 15.5,
+     "multiarith": 99.5,
+     "svamp": 78.1,
+     "ood_avg": 64.4,
+     "ood_tokens": 7.5,
+     "gain_id": null,
+     "gain_ood": null
+    },
+    {
+     "method": "CODI",
+     "simcot": true,
+     "gsm8k": 64.1,
+     "gsm8k_tokens": 7.2,
+     "gsmhard": 16.3,
+     "multiarith": 100.0,
+     "svamp": 79.4,
+     "ood_avg": 65.2,
+     "ood_tokens": 7.5,
+     "gain_id": "+3.0",
+     "gain_ood": "+0.8"
+    }
+   ]
+  }
+ },
+ "latentScaling": {
+  "source": "Figure 3",
+  "backbone": "GPT-2",
+  "x": [
+   "1-2",
+   "3-6",
+   "5-10",
+   "6-12",
+   "8-16"
+  ],
+  "latents": [
+   1,
+   3,
+   5,
+   6,
+   8
+  ],
+  "panels": [
+   {
+    "id": "gsm8k",
+    "label": "GSM8k-Aug",
+    "simcot": [
+     26.8,
+     40.3,
+     44.8,
+     43.1,
+     42.8
+    ],
+    "coconut": [
+     26.4,
+     35.0,
+     36.6,
+     29.3,
+     29.8
+    ]
+   },
+   {
+    "id": "gsmhard",
+    "label": "GSM-Hard",
+    "simcot": [
+     6.0,
+     8.7,
+     9.3,
+     8.6,
+     9.5
+    ],
+    "coconut": [
+     5.7,
+     8.1,
+     8.7,
+     6.1,
+     6.7
+    ]
+   },
+   {
+    "id": "multiarith",
+    "label": "MultiArith",
+    "simcot": [
+     41.0,
+     88.8,
+     90.8,
+     90.5,
+     90.3
+    ],
+    "coconut": [
+     41.0,
+     81.5,
+     83.5,
+     47.8,
+     67.8
+    ]
+   },
+   {
+    "id": "svamp",
+    "label": "SVAMP",
+    "simcot": [
+     30.3,
+     40.4,
+     40.7,
+     39.9,
+     38.6
+    ],
+    "coconut": [
+     29.2,
+     37.5,
+     36.2,
+     28.3,
+     31.1
+    ]
+   }
+  ]
+ },
+ "latentDistance": {
+  "source": "Table 4(b)",
+  "rows": [
+   {
+    "setting": "1 latent",
+    "dist": 20.3,
+    "dist_to_vc": 36.2
+   },
+   {
+    "setting": "2 latent",
+    "dist": 23.46,
+    "dist_to_vc": 28.82
+   },
+   {
+    "setting": "4 latent",
+    "dist": 27.56,
+    "dist_to_vc": 27.83
+   },
+   {
+    "setting": "5 latent",
+    "dist": 28.34,
+    "dist_to_vc": 28.34
+   },
+   {
+    "setting": "Fail 5 latent",
+    "dist": 4.21,
+    "dist_to_vc": 39.39
+   },
+   {
+    "setting": "After SIM-CoT",
+    "dist": 32.81,
+    "dist_to_vc": 29.8
+   }
+  ]
+ },
+ "stepColors": {
+  "1": "#249087",
+  "2": "#2e54a1",
+  "3": "#c65f10",
+  "4": "#b8aeeb"
+ },
+ "cases": [
+  {
+   "id": "watermelon",
+   "figure": "Figure 4",
+   "segments": [
+    {
+     "text": "A watermelon farm produced 120 baby watermelons... and found out that 30% of the watermelons were ready for harvest",
+     "step": 1
+    },
+    {
+     "text": ", so she took them home. When she came back two weeks later, ",
+     "step": null
+    },
+    {
+     "text": "3/4 of the remaining melons were ready",
+     "step": 2
+    },
+    {
+     "text": ", so she harvested them. ",
+     "step": null
+    },
+    {
+     "text": "How many melons were not ready",
+     "step": 3
+    },
+    {
+     "text": " to be harvested after the two weeks?",
+     "step": null
+    }
+   ],
+   "latents": [
+    {
+     "label": null,
+     "expr": "0.3*120=36",
+     "step": 1
+    },
+    {
+     "label": null,
+     "expr": "(120-36)*3/4=63",
+     "step": 2
+    },
+    {
+     "label": null,
+     "expr": "84-63=21",
+     "step": 3
+    }
+   ],
+   "answer": "21",
+   "answer_label": "Answer: 21"
+  },
+  {
+   "id": "sheep",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "Toulouse has twice as many sheep as Charleston",
+     "step": 2
+    },
+    {
+     "text": ". ",
+     "step": null
+    },
+    {
+     "text": "Charleston has 4 times as many sheep as Seattle.",
+     "step": 1
+    },
+    {
+     "text": " How many sheep ",
+     "step": null
+    },
+    {
+     "text": "do Toulouse, Charleston, and Seattle have together",
+     "step": 3
+    },
+    {
+     "text": " ",
+     "step": null
+    },
+    {
+     "text": "if Seattle has 20 sheep?",
+     "step": 1
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "4*20=80",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "2*80=160",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "160+80+20=260",
+     "step": 3
+    }
+   ],
+   "answer": "260",
+   "answer_label": "### Answer: 260"
+  },
+  {
+   "id": "omelet",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "Claire makes a 3 egg omelet every morning for breakfast.",
+     "step": 1
+    },
+    {
+     "text": " ",
+     "step": null
+    },
+    {
+     "text": "How many dozens of eggs",
+     "step": 3
+    },
+    {
+     "text": " ",
+     "step": null
+    },
+    {
+     "text": "will she eat in 4 weeks",
+     "step": 2
+    },
+    {
+     "text": "?",
+     "step": null
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "3*7=21",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "21*4=84",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "84/12=7",
+     "step": 3
+    }
+   ],
+   "answer": "7",
+   "answer_label": "### Answer: 7"
+  },
+  {
+   "id": "dvds",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "Billy sells DVDs. ",
+     "step": null
+    },
+    {
+     "text": "He has 8 customers on Tuesday",
+     "step": 3
+    },
+    {
+     "text": ".  ",
+     "step": null
+    },
+    {
+     "text": "His first 3 customers buy one DVD each",
+     "step": 1
+    },
+    {
+     "text": ". ",
+     "step": null
+    },
+    {
+     "text": "His next 2 customers buy 2 DVDs each.",
+     "step": 2
+    },
+    {
+     "text": " ",
+     "step": null
+    },
+    {
+     "text": "His last 3 customers don't buy any DVDs. How many DVDs did Billy sell on Tuesday?",
+     "step": 3
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "3*1=3",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "2*2=4",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "3+4=7",
+     "step": 3
+    }
+   ],
+   "answer": "7",
+   "answer_label": "### Answer: 7"
+  },
+  {
+   "id": "apartment",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "Richard lives in ",
+     "step": null
+    },
+    {
+     "text": "an apartment building with 15 floors. Each floor contains 8 units",
+     "step": 1
+    },
+    {
+     "text": ", and ",
+     "step": null
+    },
+    {
+     "text": "3/4 of the building is occupied.",
+     "step": 2
+    },
+    {
+     "text": " What's ",
+     "step": null
+    },
+    {
+     "text": "the total number of unoccupied units",
+     "step": 3
+    },
+    {
+     "text": " In the building?",
+     "step": null
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "15*8=120",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "120*3/4=90",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "120-90=30",
+     "step": 3
+    }
+   ],
+   "answer": "30",
+   "answer_label": "### Answer: 30"
+  },
+  {
+   "id": "jigsaw",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "Poppy is solving a ",
+     "step": null
+    },
+    {
+     "text": "1000-piece jigsaw puzzle. She places a quarter of the pieces on the board",
+     "step": 1
+    },
+    {
+     "text": ", then her mom places ",
+     "step": null
+    },
+    {
+     "text": "a third of",
+     "step": 3
+    },
+    {
+     "text": " ",
+     "step": null
+    },
+    {
+     "text": "the remaining pieces",
+     "step": 2
+    },
+    {
+     "text": ". How many jigsaw pieces ",
+     "step": null
+    },
+    {
+     "text": "are left to be placed",
+     "step": 4
+    },
+    {
+     "text": "?",
+     "step": null
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "1000/4=250",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "1000-250=750",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "750/3=250",
+     "step": 3
+    },
+    {
+     "label": "latent4",
+     "expr": "750-250=500",
+     "step": 4
+    }
+   ],
+   "answer": "500",
+   "answer_label": "### Answer: 500"
+  },
+  {
+   "id": "uniforms",
+   "figure": "Figure 7",
+   "segments": [
+    {
+     "text": "The marching band is ordering new uniforms. Each uniform comes with ",
+     "step": null
+    },
+    {
+     "text": "a hat that costs $25",
+     "step": 2
+    },
+    {
+     "text": ", a jacket that costs three times as much as the hat",
+     "step": 1
+    },
+    {
+     "text": ", and pants that ",
+     "step": null
+    },
+    {
+     "text": "cost the average of the costs of the hat and jacket",
+     "step": 3
+    },
+    {
+     "text": ". How much does ",
+     "step": null
+    },
+    {
+     "text": "each uniform cost total",
+     "step": 4
+    },
+    {
+     "text": "?",
+     "step": null
+    }
+   ],
+   "latents": [
+    {
+     "label": "latent1",
+     "expr": "25*3=75",
+     "step": 1
+    },
+    {
+     "label": "latent2",
+     "expr": "25+75=100",
+     "step": 2
+    },
+    {
+     "label": "latent3",
+     "expr": "100/2=50",
+     "step": 3
+    },
+    {
+     "label": "latent4",
+     "expr": "100+50=150",
+     "step": 4
+    }
+   ],
+   "answer": "150",
+   "answer_label": "### Answer: 150"
+  }
+ ]
+}
